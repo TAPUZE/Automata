@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automata: The Cybernetic City-State</title>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js](https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js)"></script>
+    <link href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css)" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #0a0a12;
+            --text: #e0e0e0;
+            --glass: rgba(20, 20, 30, 0.85);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* Slide Container */
+       .slider-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            perspective: 1000px;
+        }
+
+       .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+            transform: scale(0.9) translateY(50px);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+        }
+
+       .slide.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        /* Background Overlay for readability */
+       .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(10,10,18,0.95) 0%, rgba(10,10,18,0.8) 100%);
+            z-index: 1;
+        }
+
+       .slide-content {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 1200px;
+            height: 80%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+       .full-width {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 4rem;
+            margin: 0 0 20px 0;
+            background: linear-gradient(90deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--secondary);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: '\f054';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--primary);
+            position: absolute;
+            left: 0;
+        }
+
+        /* Cards & Glassmorphism */
+       .card {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Navigation */
+       .nav-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 50px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+       .nav-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+       .nav-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+       .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: var(--secondary);
+            width: 0%;
+            transition: width 0.5s;
+            z-index: 100;
+        }
+
+        /* Chart Containers */
+       .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Specific Visuals */
+       .tech-stack-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+       .layer {
+            background: linear-gradient(90deg, rgba(0,242,255,0.1), rgba(112,0,255,0.1));
+            border: 1px solid var(--primary);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+       .layer i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+       .stat-box {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid var(--secondary);
+            border-radius: 10px;
+            background: rgba(112,0,255,0.1);
+        }
+       .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fff;
+            display: block;
+        }
+       .stat-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Slide specific overrides */
+        #slide-1 { background-image: url('[https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070](https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070)'); }
+        #slide-2 { background-image: url('[https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070](https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070)'); }
+        #slide-3 { background-image: url('[https://images.unsplash.com/photo-1512453979798-5ea904ac6605?q=80&w=2070](https://images.unsplash.com/photo-1512453979798-5ea904ac6605?q=80&w=2070)'); }
+        #slide-4 { background-image: url('[https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070](https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070)'); }
+        #slide-5 { background-image: url('[https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070](https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070)'); }
+        #slide-6 { background-image: url('[https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070](https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070)'); }
+        #slide-7 { background-image: url('[https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070](https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070)'); }
+        #slide-8 { background-image: url('[https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015](https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015)'); }
+
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="slider-container">
+
+    <div class="slide active" id="slide-1">
+        <div class="slide-content full-width" style="text-align: center;">
+            <div style="margin-bottom: 20px;">
+                <i class="fas fa-city fa-3x" style="color: var(--primary);"></i>
+            </div>
+            <h1>AUTOMATA</h1>
+            <h3 style="color: var(--primary); letter-spacing: 3px;">THE CYBERNETIC CITY-STATE</h3>
+            <p style="margin-top: 40px; font-size: 1.5rem;">The World's First <strong>Zero-Labor City</strong></p>
+            <p>Northern Negev, Israel</p>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-2">
+        <div class="slide-content">
+            <div>
+                <h2>The Crisis</h2>
+                <p>We are trying to run 21st-century software on 19th-century hardware.</p>
+                <ul>
+                    <li><strong>Labor Collapse:</strong> 450,000+ worker shortage in construction.</li>
+                    <li><strong>Productivity Stagnation:</strong> Construction is the only major sector with zero productivity growth in 50 years.</li>
+                    <li><strong>Municipal Bankruptcy:</strong> Cities are drowning in OPEX (waste, policing, maintenance).</li>
+                </ul>
+            </div>
+            <div class="card">
+                <canvas id="crisisChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-3">
+        <div class="slide-content">
+            <div class="card">
+                <div style="border-bottom: 4px solid var(--primary); padding: 20px; text-align: center;">
+                    <i class="fas fa-walking fa-2x"></i> <i class="fas fa-tree fa-2x"></i> <i class="fas fa-bicycle fa-2x"></i>
+                    <p>Surface: Humans Only</p>
+                </div>
+                <div style="background: rgba(50,50,50,0.8); padding: 20px; text-align: center; margin-top: 5px; border-radius: 0 0 10px 10px;">
+                    <div style="display: flex; justify-content: space-around;">
+                        <div><i class="fas fa-robot fa-2x" style="color: #ff9900;"></i><br>Logistics</div>
+                        <div><i class="fas fa-trash fa-2x" style="color: #ff9900;"></i><br>Waste</div>
+                        <div><i class="fas fa-bolt fa-2x" style="color: #ff9900;"></i><br>Power</div>
+                    </div>
+                    <p style="margin-top: 10px; color: #ff9900;">Sub-Surface: Machines</p>
+                </div>
+            </div>
+            <div>
+                <h2>The Solution: Zero-Labor</h2>
+                <p>A city built by robots, for people, maintained by code.</p>
+                <ul>
+                    <li><strong>Radical Separation:</strong> Pedestrians on top, utility and logistics tunnels below.</li>
+                    <li><strong>Automated Maintenance:</strong> Pneumatic waste (Envac) and robotic repair.</li>
+                    <li><strong>Result:</strong> 35% reduction in municipal OPEX.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-4">
+        <div class="slide-content">
+            <div class="full-width">
+                <h2>The Technology Stack</h2>
+            </div>
+            <div class="tech-stack-visual full-width">
+                <div class="layer">
+                    <i class="fas fa-brain"></i>
+                    <div>
+                        <h3>Layer 3: The Brain (Digital)</h3>
+                        <p>Open-RMF (Robotics Middleware Framework) & Digital Twin (Hexagon). Orchestrating every robot movement.</p>
+                    </div>
+                </div>
+                <div class="layer">
+                    <i class="fas fa-cubes"></i>
+                    <div>
+                        <h3>Layer 2: The Body (Construction)</h3>
+                        <p>3D Printed Buildings (ICON) & Robotic Bricklaying. "Factory-in-the-Field".</p>
+                    </div>
+                </div>
+                <div class="layer">
+                    <i class="fas fa-dungeon"></i>
+                    <div>
+                        <h3>Layer 1: The Veins (Logistics)</h3>
+                        <p>Underground Freight Delivery (Pipedream Labs) & Utility Tunnels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-5">
+        <div class="slide-content">
+            <div>
+                <h2>The Israeli Advantage</h2>
+                <p>Why build here? A unique legal and economic fortress.</p>
+                <ul>
+                    <li><strong>The Caesarea Model:</strong> Private corporation with municipal authority. We are the city hall.</li>
+                    <li><strong>Negev Priority "A":</strong> 20-30% CAPEX grants and 7.5% corporate tax rate.</li>
+                    <li><strong>Eilat Zone:</strong> VAT Exemption (17%) on construction materials.</li>
+                </ul>
+            </div>
+            <div class="card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="stat-box">
+                    <span class="stat-number">17%</span>
+                    <span class="stat-label">VAT Saved</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">30%</span>
+                    <span class="stat-label">Gov Grants</span>
+                </div>
+                <div class="stat-box full-width" style="grid-column: 1 / -1;">
+                    <i class="fas fa-shield-alt fa-3x" style="color: var(--primary); margin-bottom: 10px;"></i>
+                    <br>
+                    <span class="stat-label">Regulatory Sandbox Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-6">
+        <div class="slide-content">
+            <div class="card">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div>
+                <h2>City-as-a-Service (MaaS)</h2>
+                <p>Shifting from "Build & Sell" to "Operate & Monetize".</p>
+                <ul>
+                    <li><strong>Real Estate:</strong> Competitive pricing via 3D printing savings.</li>
+                    <li><strong>Subscription:</strong> Residents pay a unified fee for autonomous services (Waste, Delivery, Security).</li>
+                    <li><strong>Data Monetization:</strong> Selling "Living Lab" data to autonomous vehicle/robotics companies.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-7">
+        <div class="slide-content">
+            <div>
+                <h2>Financial Viability</h2>
+                <p>Higher upfront investment yields massive long-term efficiency.</p>
+                <ul>
+                    <li><strong>Total CAPEX:</strong> ~$9 Billion (Phase 1).</li>
+                    <li><strong>Infrastructure Premium:</strong> +20% (Tunnels/Tech).</li>
+                    <li><strong>OPEX Savings:</strong> -35% (vs Traditional City).</li>
+                    <li><strong>Projected IRR:</strong> 14% over 20 years.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <canvas id="capexChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-8">
+        <div class="slide-content full-width" style="text-align: center;">
+            <h2>The Ask: Phase 1 Seed</h2>
+            <div style="font-size: 5rem; font-weight: bold; color: var(--primary); margin: 20px 0;">$100M</div>
+            <p>To secure land, finalize the Digital Twin, and establish the Legal Entity.</p>
+            
+            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 50px;">
+                <div style="text-align: center;">
+                    <div style="width: 20px; height: 20px; background: var(--primary); border-radius: 50%; margin: 0 auto 10px;"></div>
+                    <strong>Year 1</strong><br>Land & Legal
+                </div>
+                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
+                <div style="text-align: center;">
+                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
+                    <strong>Year 3</strong><br>Infrastructure
+                </div>
+                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
+                <div style="text-align: center;">
+                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
+                    <strong>Year 5</strong><br>Construction
+                </div>
+                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
+                <div style="text-align: center;">
+                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
+                    <strong>Year 8</strong><br>Activation
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress');
+
+    function changeSlide(direction) {
+        slides.classList.remove('active');
+        currentSlide += direction;
+
+        if (currentSlide >= slides.length) currentSlide = 0;
+        if (currentSlide < 0) currentSlide = slides.length - 1;
+
+        slides.classList.add('active');
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const percentage = ((currentSlide + 1) / slides.length) * 100;
+        progressBar.style.width = percentage + '%';
+    }
+
+    // Initialize Charts
+    document.addEventListener("DOMContentLoaded", function() {
+        updateProgress();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if(event.key === "ArrowRight") changeSlide(1);
+            if(event.key === "ArrowLeft") changeSlide(-1);
+        });
+
+        // Chart 1: Labor Crisis
+        const ctx1 = document.getElementById('crisisChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['2015', '2020', '2025 (Est)'],
+                datasets:,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: 'white' } }
+                },
+                scales: {
+                    y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+
+        // Chart 2: Revenue Streams
+        const ctx2 = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels:,
+                datasets: [{
+                    data: ,
+                    backgroundColor: [
+                        'rgba(0, 242, 255, 0.7)',
+                        'rgba(112, 0, 255, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { color: 'white' } }
+                }
+            }
+        });
+
+        // Chart 3: CAPEX vs OPEX
+        const ctx3 = document.getElementById('capexChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels:,
+                datasets: [
+                    {
+                        label: 'Initial CAPEX',
+                        data: , // Normalized
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    },
+                    {
+                        label: 'Annual OPEX',
+                        data: , // Normalized
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: 'white' } },
+                    title: { display: true, text: 'Cost Structure Comparison (Normalized)', color: 'white' }
+                },
+                scales: {
+                    y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
