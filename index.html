@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCity Israel: Master Plan V6 (Stable)</title>
+    <title>AutoCity Israel: Master Plan V7 (Security Edition)</title>
     
     <!-- React Dependencies (Using UNPKG for maximum compatibility) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -52,7 +52,7 @@
     <!-- 1. LOADING SCREEN -->
     <div id="loader">
         <div class="text-4xl mb-4 animate-spin">☼</div>
-        <div>LOADING AUTOCITY OS...</div>
+        <div>LOADING AUTOCITY OS V7.0...</div>
     </div>
 
     <!-- 2. ERROR DISPLAY -->
@@ -81,10 +81,11 @@
             Left: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>,
             X: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>,
             Bot: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></svg>,
-            Chip: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>
+            Chip: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>,
+            Shield: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         };
 
-        // --- STABLE DATA SOURCE ---
+        // --- DATA ---
         const slides = [
             {
                 id: '1', layout: 'hero',
@@ -101,53 +102,64 @@
                     { label: 'HOUSING', val: '$1.2M', sub: 'Avg Unit Price', desc: 'Tel Aviv is unaffordable. We must automate to lower costs by at least 30%.' }
                 ]
             },
+            // --- NEW SECURITY SLIDE ---
             {
                 id: '3', layout: 'split',
+                title: 'STRATEGY', subtitle: 'NATIONAL SECURITY',
+                bg: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1920', // Cyber/Security image
+                content: {
+                    main: 'Labor Sovereignty. By deploying autonomous fleets, we eliminate the strategic risk of relying on hostile or unstable external workforces.',
+                    details: 'STRATEGIC ADVANTAGES:\n\n1. LABOR INDEPENDENCE:\n• No reliance on Palestinian or foreign labor.\n• Robots have no political allegiance and require no security clearance.\n• Construction continues during lockdowns, wars, or border closures.\n\n2. CLOSED LOOP SITES:\n• No daily entry of thousands of unknown personnel.\n• Sites are "Sterile Zones" managed by vetted supervisors.\n\n3. RESILIENCE:\n• Underground logistics function 24/7, immune to surface threats (missiles/terrorism).'
+                }
+            },
+            // --------------------------
+            {
+                id: '4', layout: 'split',
                 title: 'PHASE 1: DIG', subtitle: 'AUTO-TERRAFORMING',
-                bg: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1920', // Excavator image
+                bg: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1920',
                 content: {
                     main: 'Swarm excavation. Autonomous bulldozers grade the land and trench utility tunnels with GPS precision.',
                     details: 'TECH SPECS:\n\n1. BUILT ROBOTICS:\n• Retrofit kits for standard excavators\n• 24/7 operation without human operators\n\n2. TELEO SUPERVISION:\n• One human manages 10 bots remotely via 5G\n\n3. RESULT:\n• 40% reduction in earthworks cost'
                 }
             },
             {
-                id: '4', layout: 'split',
+                id: '5', layout: 'split',
                 title: 'PHASE 2: BUILD', subtitle: 'FACTORY-IN-THE-FIELD',
-                bg: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c7c?auto=format&fit=crop&q=80&w=1920', // Concrete/Construction
+                bg: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c7c?auto=format&fit=crop&q=80&w=1920',
                 content: {
                     main: 'Gantry printers extrude the city block by block using local Negev sand.',
                     details: 'TECH SPECS:\n\n1. ICON VULCAN:\n• 3D Prints 3,000 sqft/day\n• Material: "Lavacrete" (Local Sand)\n\n2. HILTI JAIBOT:\n• Autonomous overhead drilling for utilities\n• BIM-to-Field accuracy +/- 1mm'
                 }
             },
             {
-                id: '5', layout: 'split',
+                id: '6', layout: 'split',
                 title: 'PHASE 3: FINISH', subtitle: 'ROBOTIC INTERIORS',
-                bg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1920', // Modern Interior
+                bg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1920',
                 content: {
                     main: 'Precision inside the shell. Robots handle drywall, painting, and finishing.',
                     details: 'TECH SPECS:\n\n1. CANVAS:\n• AI-driven drywall finishing robot\n• Sprays and sands to Level 5 finish\n\n2. OKIBO:\n• Autonomous plastering and painting\n\n3. QUALITY:\n• Zero human error, perfect consistency'
                 }
             },
             {
-                id: '6', layout: 'split',
+                id: '7', layout: 'split',
                 title: 'LAYER 1: VEINS', subtitle: 'UNDERGROUND LOGISTICS',
-                bg: 'https://images.unsplash.com/photo-1617526738882-1ea945ce3e56?auto=format&fit=crop&q=80&w=1920', // Tunnel/Metro
+                bg: 'https://images.unsplash.com/photo-1617526738882-1ea945ce3e56?auto=format&fit=crop&q=80&w=1920',
                 content: {
                     main: 'We separate logistics from life. A dedicated "Metro" layer for freight moves pallets underground.',
                     details: 'TECH SPECS:\n\n1. PIPEDREAM LABS:\n• 12-inch uPVC pipe network\n• 80km/h autonomous pods\n\n2. ENVAC WASTE:\n• Pneumatic suction for trash (70km/h)\n• No garbage trucks on surface'
                 }
             },
             {
-                id: '7', layout: 'split',
+                id: '8', layout: 'split',
                 title: 'LAYER 3: BRAIN', subtitle: 'DIGITAL TWIN OS',
-                bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1920', // Chip/Tech
+                bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1920',
                 content: {
                     main: 'The single source of truth. We simulate traffic, energy, and robot fleets before deployment.',
                     details: 'TECH SPECS:\n\n1. NVIDIA OMNIVERSE:\n• Physics-accurate simulation\n\n2. OPEN-RMF:\n• Robotics Middleware Framework\n• Allows delivery bots to talk to elevators'
                 }
             },
             {
-                id: '8', layout: 'chart',
+                id: '9', layout: 'chart',
                 title: 'MARKET DATA', subtitle: 'ISRAEL TECH ECOSYSTEM',
                 data: [
                     { label: 'Smart City', val: 500, max: 1000, suffix: 'M' },
@@ -158,7 +170,7 @@
                 details: 'DATA SOURCE:\n• Smart City Rev: Projected $503M by 2028\n• Const-Tech: $850M invested in Israeli startups\n• Gov Goal: Move 1.2M residents to Negev by 2035'
             },
             {
-                id: '9', layout: 'chart',
+                id: '10', layout: 'chart',
                 title: 'FINANCIALS', subtitle: 'UNIT ECONOMICS',
                 data: [
                     { label: 'Infra Cost', val: 120, max: 150, suffix: '%' },
@@ -169,7 +181,7 @@
                 details: 'FINANCIAL MODEL:\n• High CAPEX: Utilidors cost +20% upfront\n• Low OPEX: Automation saves 35% annually\n• Result: 14% IRR over 20 years'
             },
             {
-                id: '10', layout: 'hero',
+                id: '11', layout: 'hero',
                 title: 'THE ASK', subtitle: '$100M SEED ROUND', tag: 'EQUITY & LAND',
                 bg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1920',
                 details: { title: 'Use of Funds', text: '• $40M: Land Acquisition (Negev Tender)\n• $25M: Digital Twin & OS Development\n• $15M: Regulatory & Legal Frameworks\n• $20M: Team & Operations' }
@@ -274,7 +286,6 @@
             const [modal, setModal] = useState(null);
 
             useEffect(() => {
-                // Remove loader when React mounts
                 const loader = document.getElementById('loader');
                 if(loader) loader.style.opacity = '0';
                 setTimeout(() => { if(loader) loader.style.display = 'none'; }, 500);
@@ -311,7 +322,7 @@
                     <div className="absolute top-0 w-full p-6 flex justify-between z-40 pointer-events-none mix-blend-screen text-white">
                         <div className="flex items-center gap-2">
                             <Icons.Chip />
-                            <span className="font-bold tracking-widest text-xs">AUTOCITY_OS_V6.0</span>
+                            <span className="font-bold tracking-widest text-xs">AUTOCITY_OS_V7.0</span>
                         </div>
                         <div className="font-mono text-xs text-cyan-500">{idx + 1} / {slides.length}</div>
                     </div>
