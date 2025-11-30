@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCity Israel: Master Plan V7 (Security Edition)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoCity Israel: Mobile Master Plan</title>
     
-    <!-- React Dependencies (Using UNPKG for maximum compatibility) -->
+    <!-- React Dependencies -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -17,13 +17,14 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        body { background-color: #020617; color: #e2e8f0; overflow: hidden; font-family: 'Inter', sans-serif; }
+        /* Base Settings */
+        body { background-color: #020617; color: #e2e8f0; overflow: hidden; font-family: 'Inter', sans-serif; touch-action: pan-y; }
         
-        /* Loading Screen */
+        /* Loader */
         #loader { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #38bdf8; font-family: monospace; transition: opacity 0.5s ease; }
         
         /* Error Box */
-        #error-box { display: none; position: fixed; top: 20px; left: 20px; right: 20px; background: #7f1d1d; color: white; padding: 20px; border: 1px solid #ef4444; z-index: 10000; font-family: monospace; }
+        #error-box { display: none; position: fixed; top: 20px; left: 20px; right: 20px; background: #7f1d1d; color: white; padding: 20px; border: 1px solid #ef4444; z-index: 10000; font-family: monospace; font-size: 12px; }
 
         /* Glassmorphism */
         .glass-panel {
@@ -45,35 +46,38 @@
         @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
         .bar-anim { transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Mobile specific adjustments */
+        .mobile-scroll { -webkit-overflow-scrolling: touch; }
     </style>
 </head>
 <body>
 
-    <!-- 1. LOADING SCREEN -->
+    <!-- LOADING SCREEN -->
     <div id="loader">
         <div class="text-4xl mb-4 animate-spin">☼</div>
-        <div>LOADING AUTOCITY OS V7.0...</div>
+        <div class="text-xs tracking-widest">LOADING AUTOCITY MOBILE...</div>
     </div>
 
-    <!-- 2. ERROR DISPLAY -->
+    <!-- ERROR DISPLAY -->
     <div id="error-box"></div>
 
-    <!-- 3. APP ROOT -->
+    <!-- APP ROOT -->
     <div id="root"></div>
 
-    <!-- 4. GLOBAL ERROR HANDLER -->
+    <!-- ERROR HANDLER -->
     <script>
         window.onerror = function(msg, url, line) {
             document.getElementById('loader').style.display = 'none';
             const err = document.getElementById('error-box');
             err.style.display = 'block';
-            err.innerHTML = `<strong>CRITICAL ERROR:</strong> ${msg}<br>Line: ${line}`;
+            err.innerHTML = `<strong>ERROR:</strong> ${msg}`;
         };
     </script>
 
-    <!-- 5. REACT APP -->
+    <!-- REACT APP -->
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         // --- ICONS ---
         const Icons = {
@@ -81,110 +85,107 @@
             Left: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>,
             X: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>,
             Bot: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></svg>,
-            Chip: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>,
-            Shield: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Chip: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>
         };
 
         // --- DATA ---
         const slides = [
             {
                 id: '1', layout: 'hero',
-                title: 'AUTOCITY ISRAEL', subtitle: 'ZERO-LABOR METROPOLIS', tag: 'NEGEV DESERT // 2026',
-                bg: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=1920',
+                title: 'AUTOCITY', subtitle: 'ZERO-LABOR METROPOLIS', tag: 'NEGEV // 2026',
+                bg: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=1000',
                 details: { title: 'Executive Summary', text: 'AutoCity is a greenfield smart city project located in the Northern Negev.\n\nDesigned from the bedrock up for automation, we replace labor with autonomous systems from Day 1.\n\nBy burying logistics and utilizing robotic maintenance, we reduce municipal OPEX by 35%.' }
             },
             {
                 id: '2', layout: 'stats',
-                title: 'THE CRISIS', subtitle: 'SYSTEM FAILURE IMMINENT',
+                title: 'THE CRISIS', subtitle: 'SYSTEM FAILURE',
                 cards: [
-                    { label: 'LABOR GAP', val: '450k', sub: 'Missing Workers', desc: 'Israel & US face massive construction labor shortages. Productivity has been stagnant for 50 years.' },
-                    { label: 'OPEX WASTE', val: '35%', sub: 'Budget Loss', desc: 'Municipal budgets are drained by manual services: garbage trucks, street sweeping, and policing.' },
-                    { label: 'HOUSING', val: '$1.2M', sub: 'Avg Unit Price', desc: 'Tel Aviv is unaffordable. We must automate to lower costs by at least 30%.' }
+                    { label: 'LABOR GAP', val: '450k', sub: 'Missing Workers', desc: 'Israel & US face massive construction labor shortages.' },
+                    { label: 'OPEX WASTE', val: '35%', sub: 'Budget Loss', desc: 'Budgets drained by manual services: garbage, cleaning, policing.' },
+                    { label: 'HOUSING', val: '$1.2M', sub: 'Avg Unit Price', desc: 'Tel Aviv is unaffordable. We must automate to lower costs.' }
                 ]
             },
-            // --- NEW SECURITY SLIDE ---
             {
                 id: '3', layout: 'split',
-                title: 'STRATEGY', subtitle: 'NATIONAL SECURITY',
-                bg: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1920', // Cyber/Security image
+                title: 'SECURITY', subtitle: 'LABOR SOVEREIGNTY',
+                bg: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000',
                 content: {
-                    main: 'Labor Sovereignty. By deploying autonomous fleets, we eliminate the strategic risk of relying on hostile or unstable external workforces.',
-                    details: 'STRATEGIC ADVANTAGES:\n\n1. LABOR INDEPENDENCE:\n• No reliance on Palestinian or foreign labor.\n• Robots have no political allegiance and require no security clearance.\n• Construction continues during lockdowns, wars, or border closures.\n\n2. CLOSED LOOP SITES:\n• No daily entry of thousands of unknown personnel.\n• Sites are "Sterile Zones" managed by vetted supervisors.\n\n3. RESILIENCE:\n• Underground logistics function 24/7, immune to surface threats (missiles/terrorism).'
+                    main: 'Labor Sovereignty. Autonomous fleets eliminate the strategic risk of hostile workforces.',
+                    details: 'STRATEGIC ADVANTAGES:\n\n1. INDEPENDENCE:\n• No reliance on foreign labor.\n• Robots have no political allegiance.\n• Work continues during conflicts.\n\n2. CLOSED LOOP SITES:\n• No daily entry of unknown personnel.\n• Sites are "Sterile Zones".'
                 }
             },
-            // --------------------------
             {
                 id: '4', layout: 'split',
-                title: 'PHASE 1: DIG', subtitle: 'AUTO-TERRAFORMING',
-                bg: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1920',
+                title: 'PHASE 1', subtitle: 'AUTO-TERRAFORM',
+                bg: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1000',
                 content: {
-                    main: 'Swarm excavation. Autonomous bulldozers grade the land and trench utility tunnels with GPS precision.',
-                    details: 'TECH SPECS:\n\n1. BUILT ROBOTICS:\n• Retrofit kits for standard excavators\n• 24/7 operation without human operators\n\n2. TELEO SUPERVISION:\n• One human manages 10 bots remotely via 5G\n\n3. RESULT:\n• 40% reduction in earthworks cost'
+                    main: 'Swarm excavation. Autonomous bulldozers trench utility tunnels with GPS precision.',
+                    details: 'TECH SPECS:\n\n1. BUILT ROBOTICS:\n• Retrofit kits for excavators\n• 24/7 operation\n\n2. TELEO SUPERVISION:\n• Remote management via 5G\n\n3. RESULT:\n• 40% reduction in earthworks cost'
                 }
             },
             {
                 id: '5', layout: 'split',
-                title: 'PHASE 2: BUILD', subtitle: 'FACTORY-IN-THE-FIELD',
-                bg: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c7c?auto=format&fit=crop&q=80&w=1920',
+                title: 'PHASE 2', subtitle: 'ROBO-CONSTRUCTION',
+                bg: 'https://images.unsplash.com/photo-1531834685032-c34bf0d84c7c?auto=format&fit=crop&q=80&w=1000',
                 content: {
                     main: 'Gantry printers extrude the city block by block using local Negev sand.',
-                    details: 'TECH SPECS:\n\n1. ICON VULCAN:\n• 3D Prints 3,000 sqft/day\n• Material: "Lavacrete" (Local Sand)\n\n2. HILTI JAIBOT:\n• Autonomous overhead drilling for utilities\n• BIM-to-Field accuracy +/- 1mm'
+                    details: 'TECH SPECS:\n\n1. ICON VULCAN:\n• 3D Prints 3,000 sqft/day\n• Material: "Lavacrete" (Sand)\n\n2. HILTI JAIBOT:\n• Autonomous overhead drilling\n• BIM-to-Field accuracy +/- 1mm'
                 }
             },
             {
                 id: '6', layout: 'split',
-                title: 'PHASE 3: FINISH', subtitle: 'ROBOTIC INTERIORS',
-                bg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1920',
+                title: 'PHASE 3', subtitle: 'AUTO-FINISHING',
+                bg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1000',
                 content: {
                     main: 'Precision inside the shell. Robots handle drywall, painting, and finishing.',
-                    details: 'TECH SPECS:\n\n1. CANVAS:\n• AI-driven drywall finishing robot\n• Sprays and sands to Level 5 finish\n\n2. OKIBO:\n• Autonomous plastering and painting\n\n3. QUALITY:\n• Zero human error, perfect consistency'
+                    details: 'TECH SPECS:\n\n1. CANVAS:\n• AI-driven drywall robot\n• Level 5 finish\n\n2. OKIBO:\n• Autonomous plastering\n\n3. QUALITY:\n• Zero human error'
                 }
             },
             {
                 id: '7', layout: 'split',
-                title: 'LAYER 1: VEINS', subtitle: 'UNDERGROUND LOGISTICS',
-                bg: 'https://images.unsplash.com/photo-1617526738882-1ea945ce3e56?auto=format&fit=crop&q=80&w=1920',
+                title: 'LAYER 1', subtitle: 'UNDERGROUND METRO',
+                bg: 'https://images.unsplash.com/photo-1617526738882-1ea945ce3e56?auto=format&fit=crop&q=80&w=1000',
                 content: {
                     main: 'We separate logistics from life. A dedicated "Metro" layer for freight moves pallets underground.',
-                    details: 'TECH SPECS:\n\n1. PIPEDREAM LABS:\n• 12-inch uPVC pipe network\n• 80km/h autonomous pods\n\n2. ENVAC WASTE:\n• Pneumatic suction for trash (70km/h)\n• No garbage trucks on surface'
+                    details: 'TECH SPECS:\n\n1. PIPEDREAM LABS:\n• 12-inch uPVC pipe network\n• 80km/h autonomous pods\n\n2. ENVAC WASTE:\n• Pneumatic suction (70km/h)\n• No garbage trucks'
                 }
             },
             {
                 id: '8', layout: 'split',
-                title: 'LAYER 3: BRAIN', subtitle: 'DIGITAL TWIN OS',
-                bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1920',
+                title: 'LAYER 3', subtitle: 'DIGITAL TWIN OS',
+                bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000',
                 content: {
                     main: 'The single source of truth. We simulate traffic, energy, and robot fleets before deployment.',
-                    details: 'TECH SPECS:\n\n1. NVIDIA OMNIVERSE:\n• Physics-accurate simulation\n\n2. OPEN-RMF:\n• Robotics Middleware Framework\n• Allows delivery bots to talk to elevators'
+                    details: 'TECH SPECS:\n\n1. NVIDIA OMNIVERSE:\n• Physics-accurate simulation\n\n2. OPEN-RMF:\n• Robotics Middleware Framework\n• Inter-fleet communication'
                 }
             },
             {
                 id: '9', layout: 'chart',
-                title: 'MARKET DATA', subtitle: 'ISRAEL TECH ECOSYSTEM',
+                title: 'MARKET', subtitle: 'ISRAEL ECOSYSTEM',
                 data: [
-                    { label: 'Smart City', val: 500, max: 1000, suffix: 'M' },
-                    { label: 'Const-Tech', val: 850, max: 1000, suffix: 'M' },
-                    { label: 'Negev Pop', val: 1.2, max: 2, suffix: 'M' },
-                    { label: 'Labor Gap', val: 45, max: 100, suffix: 'K' }
+                    { label: 'SmartCity', val: 500, max: 1000, suffix: 'M' },
+                    { label: 'ConstTech', val: 850, max: 1000, suffix: 'M' },
+                    { label: 'Pop Target', val: 1.2, max: 2, suffix: 'M' },
+                    { label: 'Shortage', val: 45, max: 100, suffix: 'K' }
                 ],
-                details: 'DATA SOURCE:\n• Smart City Rev: Projected $503M by 2028\n• Const-Tech: $850M invested in Israeli startups\n• Gov Goal: Move 1.2M residents to Negev by 2035'
+                details: 'DATA SOURCE:\n• Smart City Rev: $503M by 2028\n• Const-Tech: $850M invested\n• Gov Goal: 1.2M residents to Negev'
             },
             {
                 id: '10', layout: 'chart',
-                title: 'FINANCIALS', subtitle: 'UNIT ECONOMICS',
+                title: 'FINANCE', subtitle: 'UNIT ECONOMICS',
                 data: [
-                    { label: 'Infra Cost', val: 120, max: 150, suffix: '%' },
-                    { label: 'Ops Cost', val: 65, max: 100, suffix: '%' },
-                    { label: 'Waste Ops', val: 10, max: 100, suffix: '%' },
+                    { label: 'Infra', val: 120, max: 150, suffix: '%' },
+                    { label: 'Ops', val: 65, max: 100, suffix: '%' },
+                    { label: 'Waste', val: 10, max: 100, suffix: '%' },
                     { label: 'IRR', val: 14, max: 20, suffix: '%' }
                 ],
-                details: 'FINANCIAL MODEL:\n• High CAPEX: Utilidors cost +20% upfront\n• Low OPEX: Automation saves 35% annually\n• Result: 14% IRR over 20 years'
+                details: 'FINANCIAL MODEL:\n• High CAPEX: +20% upfront\n• Low OPEX: -35% annually\n• Result: 14% IRR over 20 years'
             },
             {
                 id: '11', layout: 'hero',
-                title: 'THE ASK', subtitle: '$100M SEED ROUND', tag: 'EQUITY & LAND',
-                bg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1920',
-                details: { title: 'Use of Funds', text: '• $40M: Land Acquisition (Negev Tender)\n• $25M: Digital Twin & OS Development\n• $15M: Regulatory & Legal Frameworks\n• $20M: Team & Operations' }
+                title: 'THE ASK', subtitle: '$100M SEED', tag: 'EQUITY & LAND',
+                bg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000',
+                details: { title: 'Use of Funds', text: '• $40M: Land Acquisition\n• $25M: Digital Twin & OS\n• $15M: Regulatory & Legal\n• $20M: Team & Operations' }
             }
         ];
 
@@ -193,44 +194,46 @@
         const Modal = ({ content, onClose }) => {
             if (!content) return null;
             return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md modal-enter" onClick={onClose}>
-                    <div className="glass-panel w-full max-w-2xl p-8 rounded-lg relative border-l-4 border-cyan-500" onClick={e => e.stopPropagation()}>
-                        <button onClick={onClose} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors"><Icons.X /></button>
-                        <h3 className="text-2xl font-bold text-cyan-400 mb-6 font-mono border-b border-cyan-900/50 pb-4">{content.title}</h3>
-                        <div className="text-slate-300 text-sm leading-loose whitespace-pre-wrap font-mono h-[60vh] overflow-y-auto pr-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl modal-enter" onClick={onClose}>
+                    <div className="w-full h-full md:h-auto md:max-w-2xl bg-slate-900/90 border border-cyan-500/30 p-6 rounded-xl relative flex flex-col" onClick={e => e.stopPropagation()}>
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 p-2"><Icons.X /></button>
+                        <h3 className="text-xl font-bold text-cyan-400 mb-4 font-mono border-b border-cyan-900/50 pb-4">{content.title}</h3>
+                        <div className="text-slate-300 text-sm leading-loose whitespace-pre-wrap font-mono flex-1 overflow-y-auto mobile-scroll">
                             {content.details || content.text}
                         </div>
+                        <div className="mt-4 text-center text-xs text-slate-500 uppercase">Tap anywhere to close</div>
                     </div>
                 </div>
             );
         };
 
         const SlideHero = ({ slide, onOpen }) => (
-            <div className="h-full flex flex-col items-center justify-center text-center relative z-10 px-4">
-                <div className="mb-8 text-cyan-400"><Icons.Bot /></div>
-                <h1 className="text-6xl md:text-9xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl">{slide.title}</h1>
-                <h2 className="text-2xl md:text-3xl text-cyan-200 font-light tracking-widest mb-12 uppercase">{slide.subtitle}</h2>
-                <div className="px-4 py-2 bg-cyan-950/50 border border-cyan-500/30 rounded text-xs font-mono text-cyan-400 mb-12">{slide.tag}</div>
-                <button onClick={onOpen} className="px-8 py-3 bg-white text-black hover:bg-cyan-400 transition-colors font-bold text-sm tracking-wider flex items-center gap-2">
-                    EXPLORE DATA <Icons.Right />
+            <div className="h-full flex flex-col items-center justify-center text-center relative z-10 px-6 pb-20">
+                <div className="mb-6 text-cyan-400 transform scale-125"><Icons.Bot /></div>
+                <h1 className="text-5xl md:text-8xl font-black text-white mb-4 tracking-tighter drop-shadow-2xl leading-tight">{slide.title}</h1>
+                <h2 className="text-xl md:text-3xl text-cyan-200 font-light tracking-widest mb-8 uppercase">{slide.subtitle}</h2>
+                <div className="px-3 py-1 bg-cyan-950/50 border border-cyan-500/30 rounded text-[10px] md:text-xs font-mono text-cyan-400 mb-8">{slide.tag}</div>
+                <button onClick={onOpen} className="px-8 py-4 bg-white text-black active:bg-cyan-400 transition-colors font-bold text-sm tracking-wider rounded-full shadow-lg hover:shadow-cyan-500/50">
+                    TAP FOR DETAILS
                 </button>
             </div>
         );
 
         const SlideStats = ({ slide, onOpen }) => (
-            <div className="h-full flex flex-col justify-center max-w-6xl mx-auto px-6 z-10 relative">
-                <div className="mb-12 border-l-4 border-cyan-500 pl-6">
-                    <h2 className="text-5xl font-black text-white mb-2">{slide.title}</h2>
-                    <p className="text-xl text-slate-400 font-mono">{slide.subtitle}</p>
+            <div className="h-full flex flex-col justify-center px-6 z-10 relative pb-20 overflow-y-auto mobile-scroll">
+                <div className="mb-8 border-l-4 border-cyan-500 pl-4">
+                    <h2 className="text-4xl font-black text-white mb-1">{slide.title}</h2>
+                    <p className="text-lg text-slate-400 font-mono">{slide.subtitle}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex flex-col gap-4">
                     {slide.cards.map((c, i) => (
-                        <div key={i} className="glass-panel p-8 hover:border-cyan-500 transition-colors cursor-pointer group flex flex-col justify-between min-h-[200px]" onClick={() => onOpen({title: c.label, details: c.desc})}>
-                            <div className="text-4xl font-bold text-white mb-2 font-mono group-hover:text-cyan-400">{c.val}</div>
-                            <div>
-                                <div className="text-xl font-bold text-cyan-200 mb-1">{c.label}</div>
-                                <div className="text-xs text-slate-500 font-mono uppercase">{c.sub}</div>
+                        <div key={i} className="glass-panel p-6 active:bg-slate-800 transition-colors rounded-xl" onClick={() => onOpen({title: c.label, details: c.desc})}>
+                            <div className="flex justify-between items-center mb-1">
+                                <div className="text-3xl font-bold text-white font-mono">{c.val}</div>
+                                <div className="text-cyan-400"><Icons.Right /></div>
                             </div>
+                            <div className="text-lg font-bold text-cyan-200">{c.label}</div>
+                            <div className="text-xs text-slate-500 font-mono uppercase">{c.sub}</div>
                         </div>
                     ))}
                 </div>
@@ -238,42 +241,46 @@
         );
 
         const SlideSplit = ({ slide, onOpen }) => (
-            <div className="h-full flex flex-col md:flex-row z-10 relative">
-                <div className="flex-1 flex flex-col justify-center p-12 md:p-24 bg-black/60 backdrop-blur-sm border-r border-slate-800">
-                    <div className="mb-4 text-cyan-500 font-mono text-xs">SYSTEM ARCHITECTURE</div>
-                    <h2 className="text-5xl font-black text-white mb-4 leading-none">{slide.title}</h2>
-                    <h3 className="text-xl text-slate-300 mb-8 font-light tracking-widest">{slide.subtitle}</h3>
-                    <p className="text-lg text-slate-400 leading-relaxed mb-8 border-l-2 border-slate-700 pl-4">
+            <div className="h-full flex flex-col z-10 relative">
+                {/* Image Section (Top on mobile) */}
+                <div className="h-1/3 w-full relative border-b border-cyan-500/30">
+                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent z-10"></div>
+                </div>
+                {/* Content Section */}
+                <div className="flex-1 p-6 pb-24 bg-slate-900/40 backdrop-blur-sm flex flex-col justify-center">
+                    <div className="mb-2 text-cyan-500 font-mono text-[10px]">SYSTEM ARCHITECTURE</div>
+                    <h2 className="text-4xl font-black text-white mb-2 leading-none">{slide.title}</h2>
+                    <h3 className="text-lg text-slate-300 mb-6 font-light tracking-widest">{slide.subtitle}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-6 border-l-2 border-slate-700 pl-4">
                         {slide.content.main}
                     </p>
-                    <button onClick={() => onOpen({title: slide.subtitle + ' SPECS', details: slide.content.details})} className="self-start text-cyan-400 hover:text-white font-mono text-xs flex gap-2 border-b border-cyan-500 pb-1">
+                    <button onClick={() => onOpen({title: slide.subtitle + ' SPECS', details: slide.content.details})} className="self-start px-4 py-2 bg-cyan-500/10 border border-cyan-500 text-cyan-400 rounded text-xs font-mono flex gap-2 items-center">
                         VIEW BLUEPRINTS <Icons.Right />
                     </button>
                 </div>
-                <div className="flex-1"></div> 
             </div>
         );
 
         const SlideChart = ({ slide, onOpen }) => (
-            <div className="h-full flex flex-col justify-center max-w-5xl mx-auto px-6 z-10 relative">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold text-white mb-2">{slide.title}</h2>
-                    <p className="text-slate-400 font-mono">{slide.subtitle}</p>
+            <div className="h-full flex flex-col justify-center px-6 z-10 relative pb-20">
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-bold text-white mb-1">{slide.title}</h2>
+                    <p className="text-sm text-slate-400 font-mono">{slide.subtitle}</p>
                 </div>
-                <div className="glass-panel p-12 h-96 flex items-end justify-between gap-8 relative" onClick={() => onOpen({title: 'Data Analysis', details: slide.details})}>
-                     <div className="absolute inset-0 p-12 flex flex-col justify-between opacity-10 pointer-events-none">
+                <div className="glass-panel p-6 h-80 flex items-end justify-between gap-3 relative rounded-xl" onClick={() => onOpen({title: 'Data Analysis', details: slide.details})}>
+                     <div className="absolute inset-0 p-6 flex flex-col justify-between opacity-10 pointer-events-none">
                         <div className="w-full h-px bg-cyan-500"></div>
                         <div className="w-full h-px bg-cyan-500"></div>
                         <div className="w-full h-px bg-cyan-500"></div>
                     </div>
                     {slide.data.map((d, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-4 h-full justify-end group cursor-pointer z-10">
-                            <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity text-cyan-300 font-mono text-xs bg-black px-2 py-1 border border-cyan-900">
+                        <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end z-10">
+                            <div className="text-cyan-300 font-mono text-[10px] bg-black/50 px-1 rounded whitespace-nowrap">
                                 {d.val}{d.suffix}
                             </div>
-                            <div className="w-full bg-cyan-800 opacity-80 group-hover:opacity-100 group-hover:bg-cyan-400 bar-anim hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]" 
+                            <div className="w-full bg-cyan-600/80 bar-anim rounded-t" 
                                  style={{ height: `${(d.val / d.max) * 100}%` }}></div>
-                            <div className="text-xs font-bold text-slate-500 group-hover:text-white font-mono uppercase tracking-widest">{d.label}</div>
+                            <div className="text-[10px] font-bold text-slate-500 font-mono uppercase text-center leading-tight">{d.label}</div>
                         </div>
                     ))}
                 </div>
@@ -284,6 +291,22 @@
         const App = () => {
             const [idx, setIdx] = useState(0);
             const [modal, setModal] = useState(null);
+            
+            // Swipe Logic
+            const touchStart = useRef(null);
+            const touchEnd = useRef(null);
+            const minSwipeDistance = 50;
+
+            const onTouchStart = (e) => { touchEnd.current = null; touchStart.current = e.targetTouches[0].clientX; }
+            const onTouchMove = (e) => { touchEnd.current = e.targetTouches[0].clientX; }
+            const onTouchEnd = () => {
+                if (!touchStart.current || !touchEnd.current) return;
+                const distance = touchStart.current - touchEnd.current;
+                const isLeftSwipe = distance > minSwipeDistance;
+                const isRightSwipe = distance < -minSwipeDistance;
+                if (isLeftSwipe && idx < slides.length - 1) next();
+                if (isRightSwipe && idx > 0) prev();
+            }
 
             useEffect(() => {
                 const loader = document.getElementById('loader');
@@ -294,55 +317,48 @@
             const next = () => setIdx(c => Math.min(c + 1, slides.length - 1));
             const prev = () => setIdx(c => Math.max(c - 1, 0));
 
-            useEffect(() => {
-                const handleKey = (e) => {
-                    if (e.key === 'ArrowRight') next();
-                    if (e.key === 'ArrowLeft') prev();
-                    if (e.key === 'Escape') setModal(null);
-                };
-                window.addEventListener('keydown', handleKey);
-                return () => window.removeEventListener('keydown', handleKey);
-            }, []);
-
             const slide = slides[idx];
 
             return (
-                <div className="h-screen w-full relative bg-slate-950 overflow-hidden text-slate-200">
+                <div 
+                    className="h-screen w-full relative bg-slate-950 overflow-hidden text-slate-200"
+                    onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+                >
                     
                     {/* Background */}
-                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 z-0 pointer-events-none">
                         {slide.bg && (
-                            <div className="absolute inset-0 bg-cover bg-center opacity-40 bg-anim transition-all duration-700 ease-in-out"
+                            <div className="absolute inset-0 bg-cover bg-center opacity-30 bg-anim transition-all duration-700 ease-in-out"
                                  style={{ backgroundImage: `url(${slide.bg})` }}></div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-transparent to-slate-950"></div>
                     </div>
 
                     {/* Header */}
-                    <div className="absolute top-0 w-full p-6 flex justify-between z-40 pointer-events-none mix-blend-screen text-white">
+                    <div className="absolute top-0 w-full p-4 flex justify-between z-40 pointer-events-none text-white">
                         <div className="flex items-center gap-2">
                             <Icons.Chip />
-                            <span className="font-bold tracking-widest text-xs">AUTOCITY_OS_V7.0</span>
+                            <span className="font-bold tracking-widest text-[10px]">AUTOCITY V8</span>
                         </div>
-                        <div className="font-mono text-xs text-cyan-500">{idx + 1} / {slides.length}</div>
+                        <div className="font-mono text-xs text-cyan-500">{idx + 1}/{slides.length}</div>
                     </div>
 
                     {/* Dynamic Slide */}
-                    <div key={slide.id} className="h-full w-full modal-enter">
+                    <div key={slide.id} className="h-full w-full modal-enter pt-12">
                         {slide.layout === 'hero' && <SlideHero slide={slide} onOpen={() => setModal(slide.details)} />}
                         {slide.layout === 'stats' && <SlideStats slide={slide} onOpen={setModal} />}
                         {slide.layout === 'split' && <SlideSplit slide={slide} onOpen={setModal} />}
                         {slide.layout === 'chart' && <SlideChart slide={slide} onOpen={setModal} />}
                     </div>
 
-                    {/* Footer Controls */}
-                    <div className="absolute bottom-0 w-full p-6 flex justify-between items-end z-40 pointer-events-none">
-                        <div className="hidden md:block text-[10px] text-slate-600 font-mono">CONFIDENTIAL // KALMAN GREENFIELD</div>
-                        <div className="flex gap-2 pointer-events-auto">
-                            <button onClick={prev} disabled={idx===0} className="p-3 bg-slate-800/50 border border-slate-700 hover:border-cyan-500 hover:text-white transition-all disabled:opacity-20 text-slate-300">
+                    {/* Footer / Nav */}
+                    <div className="absolute bottom-0 w-full p-4 pb-8 flex justify-between items-center z-40 bg-gradient-to-t from-slate-950 to-transparent">
+                        <div className="text-[10px] text-slate-600 font-mono animate-pulse">SWIPE TO NAVIGATE &larr; &rarr;</div>
+                        <div className="flex gap-4 pointer-events-auto">
+                            <button onClick={prev} disabled={idx===0} className="p-3 bg-slate-800/80 rounded-full border border-slate-700 active:border-cyan-500 disabled:opacity-20 text-slate-300">
                                 <Icons.Left />
                             </button>
-                            <button onClick={next} disabled={idx===slides.length-1} className="p-3 bg-slate-800/50 border border-slate-700 hover:border-cyan-500 hover:text-white transition-all disabled:opacity-20 text-slate-300">
+                            <button onClick={next} disabled={idx===slides.length-1} className="p-3 bg-slate-800/80 rounded-full border border-slate-700 active:border-cyan-500 disabled:opacity-20 text-slate-300">
                                 <Icons.Right />
                             </button>
                         </div>
