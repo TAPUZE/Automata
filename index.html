@@ -3,563 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automata: The Cybernetic City-State</title>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js](https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js)"></script>
-    <link href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css)" rel="stylesheet">
+    <title>AutoCity Israel: Master Plan V4</title>
+    
+    <!-- React Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --primary: #00f2ff;
-            --secondary: #7000ff;
-            --bg: #0a0a12;
-            --text: #e0e0e0;
-            --glass: rgba(20, 20, 30, 0.85);
+        /* --- CORE STYLES --- */
+        body { 
+            background-color: #030712; 
+            color: #e2e8f0; 
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif; 
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-        }
-
-        /* Slide Container */
-       .slider-container {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            perspective: 1000px;
-        }
-
-       .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-            transform: scale(0.9) translateY(50px);
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            box-sizing: border-box;
-            background-size: cover;
-            background-position: center;
-        }
-
-       .slide.active {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            pointer-events: all;
-            z-index: 10;
-        }
-
-        /* Background Overlay for readability */
-       .slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(10,10,18,0.95) 0%, rgba(10,10,18,0.8) 100%);
-            z-index: 1;
-        }
-
-       .slide-content {
-            position: relative;
-            z-index: 2;
-            width: 90%;
-            max-width: 1200px;
-            height: 80%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-       .full-width {
-            grid-column: 1 / -1;
-            text-align: center;
-        }
-
-        /* Typography */
-        h1 {
-            font-size: 4rem;
-            margin: 0 0 20px 0;
-            background: linear-gradient(90deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--secondary);
-            display: inline-block;
-            padding-bottom: 10px;
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            color: #fff;
-        }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #ccc;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            padding-left: 30px;
-            position: relative;
-        }
-
-        li::before {
-            content: '\f054';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--primary);
-            position: absolute;
-            left: 0;
-        }
-
-        /* Cards & Glassmorphism */
-       .card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        /* Navigation */
-       .nav-controls {
-            position: absolute;
-            bottom: 30px;
-            right: 50px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-
-       .nav-btn {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-       .nav-btn:hover {
-            background: var(--primary);
-            color: #000;
-        }
-
-       .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 5px;
-            background: var(--secondary);
-            width: 0%;
-            transition: width 0.5s;
-            z-index: 100;
-        }
-
-        /* Chart Containers */
-       .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        /* Specific Visuals */
-       .tech-stack-visual {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        /* Error Log (Hidden by default) */
+        #error-log { display: none; position: fixed; top: 0; left: 0; width: 100%; background: #991b1b; color: white; padding: 20px; z-index: 9999; font-family: monospace; }
         
-       .layer {
-            background: linear-gradient(90deg, rgba(0,242,255,0.1), rgba(112,0,255,0.1));
-            border: 1px solid var(--primary);
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        /* Font Utilities */
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(10, 15, 30, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-       .layer i {
-            font-size: 2rem;
-            color: var(--primary);
+        /* Animations */
+        @keyframes subtlePan {
+            0% { transform: scale(1.05) translate(0, 0); }
+            50% { transform: scale(1.05) translate(-1%, -1%); }
+            100% { transform: scale(1.05) translate(0, 0); }
+        }
+        .bg-pan { animation: subtlePan 30s infinite ease-in-out; }
+
+        .modal-enter { animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-       .stat-box {
-            text-align: center;
-            padding: 20px;
-            border: 1px solid var(--secondary);
-            border-radius: 10px;
-            background: rgba(112,0,255,0.1);
-        }
-       .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #fff;
-            display: block;
-        }
-       .stat-label {
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .bar-fill { transition: height 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
-        /* Slide specific overrides */
-        #slide-1 { background-image: url('[https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070](https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=2070)'); }
-        #slide-2 { background-image: url('[https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070](https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070)'); }
-        #slide-3 { background-image: url('[https://images.unsplash.com/photo-1512453979798-5ea904ac6605?q=80&w=2070](https://images.unsplash.com/photo-1512453979798-5ea904ac6605?q=80&w=2070)'); }
-        #slide-4 { background-image: url('[https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070](https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070)'); }
-        #slide-5 { background-image: url('[https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070](https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2070)'); }
-        #slide-6 { background-image: url('[https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070](https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070)'); }
-        #slide-7 { background-image: url('[https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070](https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070)'); }
-        #slide-8 { background-image: url('[https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015](https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015)'); }
-
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
     </style>
 </head>
 <body>
-
-<div class="progress-bar" id="progress"></div>
-
-<div class="slider-container">
-
-    <div class="slide active" id="slide-1">
-        <div class="slide-content full-width" style="text-align: center;">
-            <div style="margin-bottom: 20px;">
-                <i class="fas fa-city fa-3x" style="color: var(--primary);"></i>
-            </div>
-            <h1>AUTOMATA</h1>
-            <h3 style="color: var(--primary); letter-spacing: 3px;">THE CYBERNETIC CITY-STATE</h3>
-            <p style="margin-top: 40px; font-size: 1.5rem;">The World's First <strong>Zero-Labor City</strong></p>
-            <p>Northern Negev, Israel</p>
-        </div>
+    <!-- Fallback / Loading Screen -->
+    <div id="loading" class="h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-cyan-500 font-mono">
+        <div class="animate-spin mb-4 text-4xl">☼</div>
+        <div>INITIALIZING AUTOCITY OS...</div>
     </div>
 
-    <div class="slide" id="slide-2">
-        <div class="slide-content">
-            <div>
-                <h2>The Crisis</h2>
-                <p>We are trying to run 21st-century software on 19th-century hardware.</p>
-                <ul>
-                    <li><strong>Labor Collapse:</strong> 450,000+ worker shortage in construction.</li>
-                    <li><strong>Productivity Stagnation:</strong> Construction is the only major sector with zero productivity growth in 50 years.</li>
-                    <li><strong>Municipal Bankruptcy:</strong> Cities are drowning in OPEX (waste, policing, maintenance).</li>
-                </ul>
-            </div>
-            <div class="card">
-                <canvas id="crisisChart"></canvas>
-            </div>
-        </div>
-    </div>
+    <!-- Error Catcher -->
+    <div id="error-log"></div>
 
-    <div class="slide" id="slide-3">
-        <div class="slide-content">
-            <div class="card">
-                <div style="border-bottom: 4px solid var(--primary); padding: 20px; text-align: center;">
-                    <i class="fas fa-walking fa-2x"></i> <i class="fas fa-tree fa-2x"></i> <i class="fas fa-bicycle fa-2x"></i>
-                    <p>Surface: Humans Only</p>
-                </div>
-                <div style="background: rgba(50,50,50,0.8); padding: 20px; text-align: center; margin-top: 5px; border-radius: 0 0 10px 10px;">
-                    <div style="display: flex; justify-content: space-around;">
-                        <div><i class="fas fa-robot fa-2x" style="color: #ff9900;"></i><br>Logistics</div>
-                        <div><i class="fas fa-trash fa-2x" style="color: #ff9900;"></i><br>Waste</div>
-                        <div><i class="fas fa-bolt fa-2x" style="color: #ff9900;"></i><br>Power</div>
-                    </div>
-                    <p style="margin-top: 10px; color: #ff9900;">Sub-Surface: Machines</p>
-                </div>
-            </div>
-            <div>
-                <h2>The Solution: Zero-Labor</h2>
-                <p>A city built by robots, for people, maintained by code.</p>
-                <ul>
-                    <li><strong>Radical Separation:</strong> Pedestrians on top, utility and logistics tunnels below.</li>
-                    <li><strong>Automated Maintenance:</strong> Pneumatic waste (Envac) and robotic repair.</li>
-                    <li><strong>Result:</strong> 35% reduction in municipal OPEX.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    <div id="root"></div>
 
-    <div class="slide" id="slide-4">
-        <div class="slide-content">
-            <div class="full-width">
-                <h2>The Technology Stack</h2>
-            </div>
-            <div class="tech-stack-visual full-width">
-                <div class="layer">
-                    <i class="fas fa-brain"></i>
-                    <div>
-                        <h3>Layer 3: The Brain (Digital)</h3>
-                        <p>Open-RMF (Robotics Middleware Framework) & Digital Twin (Hexagon). Orchestrating every robot movement.</p>
-                    </div>
-                </div>
-                <div class="layer">
-                    <i class="fas fa-cubes"></i>
-                    <div>
-                        <h3>Layer 2: The Body (Construction)</h3>
-                        <p>3D Printed Buildings (ICON) & Robotic Bricklaying. "Factory-in-the-Field".</p>
-                    </div>
-                </div>
-                <div class="layer">
-                    <i class="fas fa-dungeon"></i>
-                    <div>
-                        <h3>Layer 1: The Veins (Logistics)</h3>
-                        <p>Underground Freight Delivery (Pipedream Labs) & Utility Tunnels.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // Global Error Handler
+        window.onerror = function(msg, source, lineno) {
+            document.getElementById('loading').style.display = 'none';
+            const log = document.getElementById('error-log');
+            log.style.display = 'block';
+            log.innerHTML = `<strong>SYSTEM ERROR:</strong> ${msg} <br> <small>${source}:${lineno}</small>`;
+        };
+    </script>
 
-    <div class="slide" id="slide-5">
-        <div class="slide-content">
-            <div>
-                <h2>The Israeli Advantage</h2>
-                <p>Why build here? A unique legal and economic fortress.</p>
-                <ul>
-                    <li><strong>The Caesarea Model:</strong> Private corporation with municipal authority. We are the city hall.</li>
-                    <li><strong>Negev Priority "A":</strong> 20-30% CAPEX grants and 7.5% corporate tax rate.</li>
-                    <li><strong>Eilat Zone:</strong> VAT Exemption (17%) on construction materials.</li>
-                </ul>
-            </div>
-            <div class="card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="stat-box">
-                    <span class="stat-number">17%</span>
-                    <span class="stat-label">VAT Saved</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-number">30%</span>
-                    <span class="stat-label">Gov Grants</span>
-                </div>
-                <div class="stat-box full-width" style="grid-column: 1 / -1;">
-                    <i class="fas fa-shield-alt fa-3x" style="color: var(--primary); margin-bottom: 10px;"></i>
-                    <br>
-                    <span class="stat-label">Regulatory Sandbox Status</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <div class="slide" id="slide-6">
-        <div class="slide-content">
-            <div class="card">
-                <canvas id="revenueChart"></canvas>
-            </div>
-            <div>
-                <h2>City-as-a-Service (MaaS)</h2>
-                <p>Shifting from "Build & Sell" to "Operate & Monetize".</p>
-                <ul>
-                    <li><strong>Real Estate:</strong> Competitive pricing via 3D printing savings.</li>
-                    <li><strong>Subscription:</strong> Residents pay a unified fee for autonomous services (Waste, Delivery, Security).</li>
-                    <li><strong>Data Monetization:</strong> Selling "Living Lab" data to autonomous vehicle/robotics companies.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+        // --- ICONS (Safe Inline SVGs) ---
+        const Icons = {
+            Right: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>,
+            Left: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>,
+            X: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18"/><path d="m6 6 18 18"/></svg>,
+            Bot: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></svg>,
+            Chip: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></svg>,
+            Globe: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
+            Cube: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m21 16-9 5-9-5"/><polygon points="3 8 12 3 21 8 12 13 3 8"/></svg>
+        };
 
-    <div class="slide" id="slide-7">
-        <div class="slide-content">
-            <div>
-                <h2>Financial Viability</h2>
-                <p>Higher upfront investment yields massive long-term efficiency.</p>
-                <ul>
-                    <li><strong>Total CAPEX:</strong> ~$9 Billion (Phase 1).</li>
-                    <li><strong>Infrastructure Premium:</strong> +20% (Tunnels/Tech).</li>
-                    <li><strong>OPEX Savings:</strong> -35% (vs Traditional City).</li>
-                    <li><strong>Projected IRR:</strong> 14% over 20 years.</li>
-                </ul>
-            </div>
-            <div class="card">
-                <canvas id="capexChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="slide" id="slide-8">
-        <div class="slide-content full-width" style="text-align: center;">
-            <h2>The Ask: Phase 1 Seed</h2>
-            <div style="font-size: 5rem; font-weight: bold; color: var(--primary); margin: 20px 0;">$100M</div>
-            <p>To secure land, finalize the Digital Twin, and establish the Legal Entity.</p>
-            
-            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 50px;">
-                <div style="text-align: center;">
-                    <div style="width: 20px; height: 20px; background: var(--primary); border-radius: 50%; margin: 0 auto 10px;"></div>
-                    <strong>Year 1</strong><br>Land & Legal
-                </div>
-                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
-                <div style="text-align: center;">
-                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
-                    <strong>Year 3</strong><br>Infrastructure
-                </div>
-                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
-                <div style="text-align: center;">
-                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
-                    <strong>Year 5</strong><br>Construction
-                </div>
-                <div style="width: 100px; height: 2px; background: #555; margin-top: 10px;"></div>
-                <div style="text-align: center;">
-                    <div style="width: 20px; height: 20px; background: #555; border-radius: 50%; margin: 0 auto 10px;"></div>
-                    <strong>Year 8</strong><br>Activation
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="nav-controls">
-    <button class="nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-    <button class="nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
-</div>
-
-<script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const progressBar = document.getElementById('progress');
-
-    function changeSlide(direction) {
-        slides.classList.remove('active');
-        currentSlide += direction;
-
-        if (currentSlide >= slides.length) currentSlide = 0;
-        if (currentSlide < 0) currentSlide = slides.length - 1;
-
-        slides.classList.add('active');
-        updateProgress();
-    }
-
-    function updateProgress() {
-        const percentage = ((currentSlide + 1) / slides.length) * 100;
-        progressBar.style.width = percentage + '%';
-    }
-
-    // Initialize Charts
-    document.addEventListener("DOMContentLoaded", function() {
-        updateProgress();
-
-        // Keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            if(event.key === "ArrowRight") changeSlide(1);
-            if(event.key === "ArrowLeft") changeSlide(-1);
-        });
-
-        // Chart 1: Labor Crisis
-        const ctx1 = document.getElementById('crisisChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['2015', '2020', '2025 (Est)'],
-                datasets:,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
+        // --- DATA ---
+        // Using stable Unsplash IDs for images to avoid broken links
+        const slides = [
+            {
+                id: '1', layout: 'hero',
+                title: 'AUTOCITY ISRAEL', subtitle: 'ZERO-LABOR METROPOLIS', tag: 'NEGEV // 2026',
+                bg: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&q=80&w=2000',
+                details: { title: 'Vision', text: 'AutoCity is not just a real estate project; it is a "Hardware-as-a-Service" platform. By burying logistics and utilizing robotic maintenance, we reduce municipal OPEX by 35% and solve the construction labor crisis.' }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: 'white' } }
-                },
-                scales: {
-                    y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
-                }
-            }
-        });
-
-        // Chart 2: Revenue Streams
-        const ctx2 = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'doughnut',
-            data: {
-                labels:,
-                datasets: [{
-                    data: ,
-                    backgroundColor: [
-                        'rgba(0, 242, 255, 0.7)',
-                        'rgba(112, 0, 255, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)'
-                    ],
-                    borderColor: 'rgba(0,0,0,0)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { color: 'white' } }
-                }
-            }
-        });
-
-        // Chart 3: CAPEX vs OPEX
-        const ctx3 = document.getElementById('capexChart').getContext('2d');
-        new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels:,
-                datasets: [
-                    {
-                        label: 'Initial CAPEX',
-                        data: , // Normalized
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    },
-                    {
-                        label: 'Annual OPEX',
-                        data: , // Normalized
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    }
+            {
+                id: '2', layout: 'stats',
+                title: 'THE CRISIS', subtitle: 'SYSTEM FAILURE IMMINENT',
+                cards: [
+                    { label: 'LABOR GAP', val: '450k', sub: 'Missing Workers', desc: 'Israel & US face massive construction labor shortages.' },
+                    { label: 'OPEX WASTE', val: '35%', sub: 'Budget Loss', desc: 'Cities bleed money on manual waste collection and reactive maintenance.' },
+                    { label: 'HOUSING', val: '$1.2M', sub: 'Avg Unit Price', desc: 'Tel Aviv is unaffordable. We must automate to lower costs.' }
                 ]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: 'white' } },
-                    title: { display: true, text: 'Cost Structure Comparison (Normalized)', color: 'white' }
-                },
-                scales: {
-                    y: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+            {
+                id: '3', layout: 'split',
+                title: 'LAYER 1: VEINS', subtitle: 'SUBSURFACE LOGISTICS',
+                bg: 'https://images.unsplash.com/photo-1617526738882-1ea945ce3e56?auto=format&fit=crop&q=80&w=2000',
+                content: {
+                    main: 'We separate logistics from life. A dedicated "Metro" layer for freight moves pallets, while a "Capillary" layer delivers packages to basements.',
+                    details: 'TECH SPECS:\n\n1. PIPEDREAM LABS:\n• 12-inch uPVC pipes\n• 80km/h autonomous pods\n• <15 min delivery time\n\n2. ENVAC WASTE:\n• 70km/h pneumatic suction\n• 4-stream optical sorting\n• No garbage trucks on surface'
                 }
+            },
+            {
+                id: '4', layout: 'split',
+                title: 'LAYER 2: BODY', subtitle: 'FACTORY-IN-THE-FIELD',
+                bg: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=2000',
+                content: {
+                    main: 'The city constructs itself. Gantry printers and swarm robotics turn the construction site into an assembly line.',
+                    details: 'TECH SPECS:\n\n1. ICON VULCAN:\n• 3D Prints 3,000 sqft/day\n• Material: Lavacrete (Negev Sand)\n\n2. HILTI JAIBOT:\n• Autonomous overhead drilling\n• BIM-to-Field accuracy +/- 1mm\n\n3. CANVAS:\n• AI Drywall Finishing (Level 5)'
+                }
+            },
+            {
+                id: '5', layout: 'split',
+                title: 'LAYER 3: BRAIN', subtitle: 'DIGITAL TWIN OS',
+                bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=2000',
+                content: {
+                    main: 'We simulate the future before building it. The Digital Twin is the single source of truth for all city operations.',
+                    details: 'TECH SPECS:\n\n1. NVIDIA OMNIVERSE:\n• Physics-accurate simulation\n• Synthetic data generation for AI training\n\n2. OPEN-RMF:\n• Robotics Middleware Framework\n• Traffic control for diverse robot fleets'
+                }
+            },
+            {
+                id: '6', layout: 'chart',
+                title: 'MARKET DATA', subtitle: 'ISRAEL TECH ECOSYSTEM',
+                data: [
+                    { label: 'Smart City', val: 500, max: 800, suffix: 'M' },
+                    { label: 'Const-Tech', val: 850, max: 1000, suffix: 'M' },
+                    { label: 'Negev Pop', val: 1.2, max: 2.0, suffix: 'M' },
+                    { label: 'Labor Gap', val: 45, max: 100, suffix: 'K' }
+                ],
+                details: 'DATA SOURCE:\n\n• Smart City Rev: Projected $503M by 2028 (CAGR 12.1%)\n• Const-Tech: $850M invested in Israeli startups (2024)\n• Gov Goal: Move 1.2M residents to Negev by 2035'
+            },
+            {
+                id: '7', layout: 'chart',
+                title: 'FINANCIALS', subtitle: 'UNIT ECONOMICS',
+                data: [
+                    { label: 'Infra Cost', val: 120, max: 150, suffix: '%' },
+                    { label: 'Ops Cost', val: 65, max: 100, suffix: '%' },
+                    { label: 'Waste Ops', val: 10, max: 100, suffix: '%' },
+                    { label: 'IRR', val: 14, max: 20, suffix: '%' }
+                ],
+                details: 'FINANCIAL MODEL:\n\n• High CAPEX: Utilidors cost +20% upfront\n• Low OPEX: Automation saves 35% annually\n• Result: 14% IRR over 20 years, beating municipal bonds'
+            },
+            {
+                id: '8', layout: 'hero',
+                title: 'THE ASK', subtitle: '$100M SEED ROUND', tag: 'EQUITY & LAND',
+                bg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000',
+                details: { title: 'Use of Funds', text: '• $40M: Land Acquisition (Negev Tender)\n• $25M: Digital Twin & OS\n• $15M: Regulatory & Legal\n• $20M: Team & Operations' }
             }
-        });
-    });
-</script>
+        ];
 
+        // --- COMPONENTS ---
+
+        const Modal = ({ content, onClose }) => {
+            if (!content) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur modal-enter" onClick={onClose}>
+                    <div className="glass-panel w-full max-w-2xl p-8 rounded relative border border-cyan-500/30" onClick={e => e.stopPropagation()}>
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-white"><Icons.X /></button>
+                        <h3 className="text-xl font-bold text-cyan-400 mb-4 font-mono uppercase border-b border-cyan-900 pb-2">{content.title}</h3>
+                        <div className="text-slate-300 font-mono text-sm leading-relaxed whitespace-pre-wrap h-64 overflow-y-auto">
+                            {content.details || content.text}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const SlideHero = ({ slide, onOpen }) => (
+            <div className="h-full flex flex-col items-center justify-center text-center relative z-10 px-4">
+                <div className="mb-8 text-cyan-400"><Icons.Bot /></div>
+                <h1 className="text-6xl md:text-9xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl">{slide.title}</h1>
+                <h2 className="text-2xl md:text-3xl text-cyan-200 font-light tracking-widest mb-12">{slide.subtitle}</h2>
+                <div className="px-4 py-2 bg-cyan-950/50 border border-cyan-500/30 rounded text-xs font-mono text-cyan-400 mb-12">{slide.tag}</div>
+                <button onClick={onOpen} className="px-8 py-3 bg-white text-black hover:bg-cyan-400 transition-colors font-bold text-sm tracking-wider flex items-center gap-2">
+                    EXPLORE DATA <Icons.Right />
+                </button>
+            </div>
+        );
+
+        const SlideStats = ({ slide, onOpen }) => (
+            <div className="h-full flex flex-col justify-center max-w-6xl mx-auto px-6 z-10 relative">
+                <div className="mb-12 border-l-4 border-cyan-500 pl-6">
+                    <h2 className="text-5xl font-black text-white mb-2">{slide.title}</h2>
+                    <p className="text-xl text-slate-400 font-mono">{slide.subtitle}</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {slide.cards.map((c, i) => (
+                        <div key={i} className="glass-panel p-8 hover:border-cyan-500 transition-colors cursor-pointer group" onClick={() => onOpen({title: c.label, details: c.desc})}>
+                            <div className="text-4xl font-bold text-white mb-2 font-mono group-hover:text-cyan-400">{c.val}</div>
+                            <div className="text-xl font-bold text-cyan-200 mb-1">{c.label}</div>
+                            <div className="text-xs text-slate-500 font-mono uppercase">{c.sub}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const SlideSplit = ({ slide, onOpen }) => (
+            <div className="h-full flex flex-col md:flex-row z-10 relative">
+                <div className="flex-1 flex flex-col justify-center p-12 bg-black/60 backdrop-blur-sm border-r border-slate-800">
+                    <div className="mb-4 text-cyan-500 font-mono text-xs">SYSTEM ARCHITECTURE</div>
+                    <h2 className="text-5xl font-black text-white mb-4">{slide.title}</h2>
+                    <h3 className="text-xl text-slate-300 mb-8 font-light tracking-widest">{slide.subtitle}</h3>
+                    <p className="text-lg text-slate-400 leading-relaxed mb-8 border-l-2 border-slate-700 pl-4">
+                        {slide.content.main}
+                    </p>
+                    <button onClick={() => onOpen({title: slide.subtitle + ' SPECS', details: slide.content.details})} className="self-start text-cyan-400 hover:text-white font-mono text-sm flex gap-2 border-b border-cyan-500 pb-1">
+                        VIEW BLUEPRINTS <Icons.Right />
+                    </button>
+                </div>
+                <div className="flex-1"></div> 
+            </div>
+        );
+
+        const SlideChart = ({ slide, onOpen }) => (
+            <div className="h-full flex flex-col justify-center max-w-5xl mx-auto px-6 z-10 relative">
+                <div className="text-center mb-12">
+                    <h2 className="text-4xl font-bold text-white mb-2">{slide.title}</h2>
+                    <p className="text-slate-400 font-mono">{slide.subtitle}</p>
+                </div>
+                <div className="glass-panel p-12 h-96 flex items-end justify-between gap-8" onClick={() => onOpen({title: 'Data Source', details: slide.details})}>
+                    {slide.data.map((d, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-4 h-full justify-end group cursor-pointer">
+                            <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity text-cyan-300 font-mono text-xs bg-black px-2 py-1 border border-cyan-900">
+                                {d.val}{d.suffix}
+                            </div>
+                            {/* Tech-Look: Solid Cyan Bars */}
+                            <div className="w-full bg-cyan-600 opacity-80 group-hover:opacity-100 group-hover:bg-cyan-400 bar-fill shadow-[0_0_10px_rgba(8,145,178,0.3)]" 
+                                 style={{ height: `${(d.val / d.max) * 100}%` }}></div>
+                            <div className="text-xs font-bold text-slate-500 group-hover:text-white font-mono uppercase tracking-widest">{d.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [idx, setIdx] = useState(0);
+            const [modal, setModal] = useState(null);
+
+            useEffect(() => {
+                // Remove loading screen once React mounts
+                const loader = document.getElementById('loading');
+                if(loader) loader.style.display = 'none';
+            }, []);
+
+            const next = () => setIdx(c => Math.min(c + 1, slides.length - 1));
+            const prev = () => setIdx(c => Math.max(c - 1, 0));
+
+            // Keyboard nav
+            useEffect(() => {
+                const handleKey = (e) => {
+                    if (e.key === 'ArrowRight') next();
+                    if (e.key === 'ArrowLeft') prev();
+                    if (e.key === 'Escape') setModal(null);
+                };
+                window.addEventListener('keydown', handleKey);
+                return () => window.removeEventListener('keydown', handleKey);
+            }, []);
+
+            const slide = slides[idx];
+
+            return (
+                <div className="h-screen w-full relative bg-slate-950 overflow-hidden text-slate-200">
+                    
+                    {/* Background Layer */}
+                    <div className="absolute inset-0 z-0">
+                        {slide.bg && (
+                            <div className="absolute inset-0 bg-cover bg-center opacity-40 bg-pan transition-all duration-700"
+                                 style={{ backgroundImage: `url(${slide.bg})` }}></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></div>
+                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+                    </div>
+
+                    {/* Header */}
+                    <div className="absolute top-0 w-full p-6 flex justify-between z-40 pointer-events-none">
+                        <div className="flex items-center gap-2 text-white">
+                            <Icons.Chip />
+                            <span className="font-bold tracking-widest text-xs">AUTOCITY_OS_V4.0</span>
+                        </div>
+                        <div className="font-mono text-xs text-slate-400">{idx + 1} / {slides.length}</div>
+                    </div>
+
+                    {/* Content */}
+                    <div key={slide.id} className="h-full w-full modal-enter">
+                        {slide.layout === 'hero' && <SlideHero slide={slide} onOpen={() => setModal(slide.details)} />}
+                        {slide.layout === 'stats' && <SlideStats slide={slide} onOpen={setModal} />}
+                        {slide.layout === 'split' && <SlideSplit slide={slide} onOpen={setModal} />}
+                        {slide.layout === 'chart' && <SlideChart slide={slide} onOpen={setModal} />}
+                    </div>
+
+                    {/* Footer Nav */}
+                    <div className="absolute bottom-0 w-full p-6 flex justify-between items-end z-40 pointer-events-none">
+                        <div className="hidden md:block text-[10px] text-slate-600 font-mono">CONFIDENTIAL // KALMAN GREENFIELD</div>
+                        <div className="flex gap-2 pointer-events-auto">
+                            <button onClick={prev} disabled={idx===0} className="p-3 bg-slate-800/50 border border-slate-700 hover:border-cyan-500 hover:text-white transition-all disabled:opacity-20">
+                                <Icons.Left />
+                            </button>
+                            <button onClick={next} disabled={idx===slides.length-1} className="p-3 bg-slate-800/50 border border-slate-700 hover:border-cyan-500 hover:text-white transition-all disabled:opacity-20">
+                                <Icons.Right />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Modal */}
+                    <Modal content={modal} onClose={() => setModal(null)} />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
